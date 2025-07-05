@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class Task {
+public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -15,7 +15,9 @@ public class Task {
     private String description;
     private boolean completed;
     private LocalDateTime createdAt;
-    private LocalDateTime dueDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private  String location;
 
     @PrePersist
     protected void onCreate() {

@@ -2,6 +2,7 @@ package com.matedevs.taskinmind.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,8 +18,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @JsonIgnore
+
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(nullable = false)

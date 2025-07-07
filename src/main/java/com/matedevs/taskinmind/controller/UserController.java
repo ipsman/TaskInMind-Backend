@@ -1,6 +1,5 @@
 package com.matedevs.taskinmind.controller;
 
-
 import com.matedevs.taskinmind.model.User;
 import com.matedevs.taskinmind.service.UserService;
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -26,13 +25,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> getUser(@RequestBody User user) {
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
         logger.info("Register user: {}", user.getUsername());
         try {
+
             User savedUser = userService.saveUser(user);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         }
         catch (Exception e) {
+            logger.error("Error registering user: {}", user.getUsername(), e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -60,7 +61,6 @@ public class UserController {
         }
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         Optional<User> user = userService.findById(id);
@@ -70,5 +70,4 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 }

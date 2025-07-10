@@ -26,14 +26,12 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        logger.info("Register user: {}", user.getUsername());
         try {
 
             User savedUser = userService.saveUser(user);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         }
         catch (Exception e) {
-            logger.error("Error registering user: {}", user.getUsername(), e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -46,6 +44,13 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         Optional<User> user = userService.findById(id);
+        return user.map( value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<User> loginUser(@PathVariable String username) {
+        Optional<User> user = userService.findByUsername(username);
         return user.map( value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

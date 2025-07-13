@@ -22,12 +22,19 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    // Új esemény létrehozása (POST /api/events)
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        // A 'createdAt' mezőt az @PrePersist annotáció automatikusan beállítja
-        Event createdEvent = eventService.createEvent(event);
-        return new ResponseEntity<>(createdEvent, HttpStatus.CREATED); // 201 Created státusz
+        // A @RequestBody automatikusan átalakítja a bejövő JSON-t az Event objektumoddá
+
+        try {
+            Event savedEvent = eventService.createEvent(event);
+            // Siker esetén add vissza a mentett eseményt egy 201 Created státusszal
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
+        } catch (Exception e) {
+            // Általános hiba esetén adj vissza egy 500-as hibát
+            // Egy @ControllerAdvice lenne a legtisztább megoldás a globális hibakezelésre
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Összes esemény lekérdezése (GET /api/events)

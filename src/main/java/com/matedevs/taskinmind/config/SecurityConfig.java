@@ -3,6 +3,7 @@ package com.matedevs.taskinmind.config;
 import com.matedevs.taskinmind.service.UserDetailsServiceImpl; // Győződj meg róla, hogy ez az import helyes
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -37,8 +38,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF kikapcsolása REST API-hoz
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS konfiguráció alkalmazása
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Login és regisztráció engedélyezése mindenki számára
                         .requestMatchers("/api/users/register").permitAll() // Ha a regisztráció a UserControllerben marad
+                        .requestMatchers(HttpMethod.POST, "/api/events").hasRole("USER")
                         .anyRequest().authenticated() // Minden más kéréshez hitelesítés szükséges
                 )
                 .sessionManagement(session -> session

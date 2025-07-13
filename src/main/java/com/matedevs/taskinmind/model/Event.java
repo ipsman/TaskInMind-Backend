@@ -13,7 +13,6 @@ public class Event {
     private long id;
     private String title;
     private String description;
-    private boolean completed;
     private LocalDateTime createdAt;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

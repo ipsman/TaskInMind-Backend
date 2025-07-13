@@ -27,13 +27,12 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public Event updateTask(Long id,Event eventDetails){
+    public Event updateEvent(Long id,Event eventDetails){
         Optional<Event> optionalEvent = eventRepository.findById(id);
         if(optionalEvent.isPresent()){
             Event event = optionalEvent.get();
             event.setTitle(eventDetails.getTitle());
             event.setDescription(eventDetails.getDescription());
-            event.setCompleted(eventDetails.isCompleted());
             event.setStartDate(eventDetails.getStartDate());
             event.setEndDate(eventDetails.getEndDate());
 

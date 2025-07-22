@@ -1,6 +1,9 @@
 package com.matedevs.taskinmind.service;
 
+import com.matedevs.taskinmind.model.ERole;
+import com.matedevs.taskinmind.model.Role;
 import com.matedevs.taskinmind.model.User;
+import com.matedevs.taskinmind.repository.RoleRepository;
 import com.matedevs.taskinmind.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
@@ -20,15 +26,17 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService; // Injektáljuk a JwtService-t!
+    private final JwtService jwtService;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager, JwtService jwtService) {
+                       AuthenticationManager authenticationManager, JwtService jwtService, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService; // Inicializáljuk!
+        this.roleRepository = roleRepository;
     }
 
     // Felhasználó regisztrációja - jelszó enkódolással
@@ -37,6 +45,14 @@ public class AuthService {
             throw new RuntimeException("A felhasználónév már foglalt!");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Set<Role> roles = new HashSet<>();
+        // Keresd meg a "ROLE_USER" szerepkört az adatbázisban
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+        user.setRoles(roles);
+
         return userRepository.save(user);
     }
 

@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,12 +36,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF kikapcsolása REST API-hoz
+                .csrf(AbstractHttpConfigurer::disable) // CSRF kikapcsolása REST API-hoz
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS konfiguráció alkalmazása
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Login és regisztráció engedélyezése mindenki számára
-                        .requestMatchers("/api/users/register").permitAll() // Ha a regisztráció a UserControllerben marad
+                        .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("USER")
                         .anyRequest().authenticated() // Minden más kéréshez hitelesítés szükséges
                 )

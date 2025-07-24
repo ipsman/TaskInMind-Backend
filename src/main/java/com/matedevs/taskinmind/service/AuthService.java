@@ -2,7 +2,7 @@ package com.matedevs.taskinmind.service;
 
 import com.matedevs.taskinmind.model.ERole;
 import com.matedevs.taskinmind.model.Role;
-import com.matedevs.taskinmind.model.User;
+import com.matedevs.taskinmind.model.User; // Fontos, hogy ez a TE entitásod legyen
 import com.matedevs.taskinmind.repository.RoleRepository;
 import com.matedevs.taskinmind.repository.UserRepository;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails; // <-- Ezt importáld!
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class AuthService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService; // Inicializáljuk!
+        this.jwtService = jwtService;
         this.roleRepository = roleRepository;
     }
 
@@ -63,17 +64,19 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(username, rawPassword)
             );
             // Ha idáig eljutottunk, a hitelesítés sikeres
-            // Frissítsd a SecurityContext-et (bár stateless API-nál nem annyira releváns)
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Generáljuk a JWT tokent
-            String jwt = jwtService.generateToken((User) authentication.getPrincipal()); // UserDetails-t vár
+            // Szerezd meg a UserDetails objektumot
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // <-- Kasztold UserDetails-re!
+
+            // Generáljuk a JWT tokent a UserDetails objektumból
+            // Ehhez a JwtService.generateToken() metódusának UserDetails-t kell fogadnia
+            String jwt = jwtService.generateToken(userDetails);
             logger.info("Felhasználó sikeresen bejelentkezett: {}", username);
-            return jwt; // Visszaadjuk a tokent
+            return jwt;
         } catch (AuthenticationException e) {
             logger.warn("Bejelentkezés sikertelen felhasználó: {}. Hiba: {}", username, e.getMessage());
             throw new RuntimeException("Hibás felhasználónév vagy jelszó.");
         }
     }
-
 }

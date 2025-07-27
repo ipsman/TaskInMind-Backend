@@ -43,6 +43,21 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
+    @GetMapping("/{year}&{month}")
+    public ResponseEntity<List<Event>> getEventsByMonth(@RequestParam(required = false) Integer Year,
+                                                        @RequestParam(required = false) Integer Month) {
+        List<Event> events;
+
+        if (Year != null && Month != null) {
+            events = eventService.getEventsByMonth(Year, Month);
+        }
+        else {
+            events = eventService.getAllEvents();
+        }
+
+        return ResponseEntity.ok(events);
+    }
+
     // Esemény lekérdezése ID alapján (GET /api/events/{id})
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {

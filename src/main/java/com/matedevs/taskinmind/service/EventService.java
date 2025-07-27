@@ -27,6 +27,10 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
+    public List<Event> getEventsByMonth(Integer Year, Integer Month){
+        return eventRepository.findEventsByYearAndMonth(Year, Month);
+    }
+
     public Event updateEvent(Long id,Event eventDetails){
         Optional<Event> optionalEvent = eventRepository.findById(id);
         if(optionalEvent.isPresent()){

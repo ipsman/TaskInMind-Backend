@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration; // Importálni!
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // Importálni!
 import org.springframework.web.filter.CorsFilter; // Importálni!
@@ -28,26 +29,30 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthFilter;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
+        this.jwtAuthFilter = jwtAuthenticationFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // CSRF kikapcsolása REST API-hoz
+                .csrf(csrf -> csrf.disable()) // CSRF kikapcsolása REST API-hoz
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS konfiguráció alkalmazása
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Login és regisztráció engedélyezése mindenki számára
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("USER")
-                        .anyRequest().authenticated() // Minden más kéréshez hitelesítés szükséges
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // REST API-hoz stateless session
-                );
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

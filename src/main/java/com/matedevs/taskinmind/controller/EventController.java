@@ -1,15 +1,26 @@
 package com.matedevs.taskinmind.controller;
 
+import com.matedevs.taskinmind.config.CustomUserDetails;
+import com.matedevs.taskinmind.config.DataLoader;
 import com.matedevs.taskinmind.model.Event;
 import com.matedevs.taskinmind.service.EventService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController // Jelöli, hogy ez egy REST Controller
 @RequestMapping("/api/events") // Az összes végpont "/api/events" prefixet kap
 @CrossOrigin(origins = "http://localhost:3000") // CORS engedélyezése a Next.js frontendről
@@ -22,10 +33,29 @@ public class EventController {
         this.eventService = eventService;
     }
 
+
+    private Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new SecurityException("A felhasználó nincs hitelesítve.");
+        }
+
+        // 1. Check if authenticated
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return customUserDetails.getId();
+        }
+        else{
+            throw new SecurityException("Ervenytelen token!");
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        // A @RequestBody automatikusan átalakítja a bejövő JSON-t az Event objektumoddá
+        Long userId = getAuthenticatedUserId();
 
+        event.setUserId(userId);
         try {
             Event savedEvent = eventService.createEvent(event);
             // Siker esetén add vissza a mentett eseményt egy 201 Created státusszal
@@ -37,25 +67,26 @@ public class EventController {
         }
     }
 
-    // Összes esemény lekérdezése (GET /api/events)
+    private static final Logger logger = LoggerFactory.getLogger(EventController.class);
+
     @GetMapping
-    public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
-    }
-
-    @GetMapping("/{year}&{month}")
-    public ResponseEntity<List<Event>> getEventsByMonth(@RequestParam(required = false) Integer Year,
-                                                        @RequestParam(required = false) Integer Month) {
+    public ResponseEntity<List<Event>> getEventsByMonth(@RequestParam Integer Year,
+                                                        @RequestParam Integer Month) {
         List<Event> events;
-
-        if (Year != null && Month != null) {
-            events = eventService.getEventsByMonth(Year, Month);
+        try {
+            Long userId = getAuthenticatedUserId();
+            System.out.println("DEBUG: EventService.getEventsByMonthAndUser called with year=" + Year + ", month=" + Month + ", userId=" + userId);
+            logger.info("DEBUG: EventService.getEventsByMonthAndUser called with year=" + Year + ", month=" + Month + ", userId=" + userId);
+            List<Event> event = eventService.getEventsByMonth(Year, Month, userId);
+            System.err.println(userId);
+            return ResponseEntity.ok(event);
+        } catch (SecurityException e) {
+            System.err.println("Security error getting events by month: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        } catch (Exception e) {
+            System.err.println("Error getting events by month: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        else {
-            events = eventService.getAllEvents();
-        }
-
-        return ResponseEntity.ok(events);
     }
 
     // Esemény lekérdezése ID alapján (GET /api/events/{id})

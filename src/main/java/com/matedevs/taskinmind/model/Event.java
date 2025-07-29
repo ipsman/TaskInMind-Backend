@@ -17,6 +17,7 @@ public class Event {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String location;
+    private Long userId;
 
     @PrePersist
     protected void onCreate() {

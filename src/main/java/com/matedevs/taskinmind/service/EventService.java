@@ -1,9 +1,7 @@
 package com.matedevs.taskinmind.service;
 
 import com.matedevs.taskinmind.model.Event;
-import com.matedevs.taskinmind.model.Task;
 import com.matedevs.taskinmind.repository.EventRepository;
-import com.matedevs.taskinmind.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +25,9 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public List<Event> getEventsByMonth(Integer Year, Integer Month){
-        return eventRepository.findEventsByYearAndMonth(Year, Month);
+    public List<Event> getEventsByMonth(Integer Year, Integer Month, Long userId){
+        System.out.println("DEBUG: EventService.getEventsByMonthAndUser called with year=" + Year + ", month=" + Month + ", userId=" + userId);
+        return eventRepository.findEventsByYearAndMonth(Year, Month , userId);
     }
 
     public Event updateEvent(Long id,Event eventDetails){
@@ -39,7 +38,6 @@ public class EventService {
             event.setDescription(eventDetails.getDescription());
             event.setStartDate(eventDetails.getStartDate());
             event.setEndDate(eventDetails.getEndDate());
-
             return eventRepository.save(event);
         }
         else{

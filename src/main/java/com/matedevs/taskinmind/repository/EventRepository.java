@@ -11,8 +11,7 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event,Long> {
-    List<Event> findByStartDateBetween(LocalDate startOfMonth, LocalDate endOfMonth);
 
-    @Query("select e from Event e where year(e.startDate) = :year and month(e.startDate) = :month")
-    List<Event> findEventsByYearAndMonth (@Param("year") int year, @Param("month") int month);
+    @Query("SELECT e FROM Event e WHERE YEAR(e.startDate) = :year AND MONTH(e.startDate) = :month AND e.userId = :userId")
+    List<Event> findEventsByYearAndMonth (@Param("year") int year, @Param("month") int month, @Param("userId") Long userId);
 }

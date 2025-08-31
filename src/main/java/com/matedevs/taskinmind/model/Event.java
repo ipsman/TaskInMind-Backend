@@ -18,6 +18,7 @@ public class Event {
     private LocalDateTime endDate;
     private String location;
     private Long userId;
+    private String color;
 
     @PrePersist
     protected void onCreate() {

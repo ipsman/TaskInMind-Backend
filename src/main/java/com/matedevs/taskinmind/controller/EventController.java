@@ -69,7 +69,7 @@ public class EventController {
 
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
-    @GetMapping
+    @GetMapping(params = {"Year", "Month"})
     public ResponseEntity<List<Event>> getEventsByMonth(@RequestParam Integer Year,
                                                         @RequestParam Integer Month) {
         List<Event> events;
@@ -89,7 +89,7 @@ public class EventController {
         }
     }
 
-    // Esemény lekérdezése ID alapján (GET /api/events/{id})
+
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
         Optional<Event> event = eventService.getEventById(id);

@@ -30,21 +30,6 @@ public class EventService {
         return eventRepository.findEventsByYearAndMonth(Year, Month , userId);
     }
 
-    public Event updateEvent(Long id,Event eventDetails){
-        Optional<Event> optionalEvent = eventRepository.findById(id);
-        if(optionalEvent.isPresent()){
-            Event event = optionalEvent.get();
-            event.setTitle(eventDetails.getTitle());
-            event.setDescription(eventDetails.getDescription());
-            event.setStartDate(eventDetails.getStartDate());
-            event.setEndDate(eventDetails.getEndDate());
-            return eventRepository.save(event);
-        }
-        else{
-            return null;
-        }
-    }
-
     public void deleteEvent(Long id){
         eventRepository.deleteById(id);
     }

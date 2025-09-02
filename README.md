@@ -6,7 +6,7 @@ This is the backend for **TaskInMind**, a full-stack calendar and task managemen
 
 ---
 
-### ✨ Features
+### Features
 
 * Secure user authentication and authorization with JWT and Spring Security.
 * Complete CRUD (Create, Read, Update, Delete) operations for tasks and calendar events.
@@ -15,7 +15,7 @@ This is the backend for **TaskInMind**, a full-stack calendar and task managemen
 
 ---
 
-### 🛠️ Tech Stack
+### Tech Stack
 
 * **Java 21** 
 * **Spring Boot**
@@ -28,7 +28,7 @@ This is the backend for **TaskInMind**, a full-stack calendar and task managemen
 
 ---
 
-### 🚀 Getting Started
+### Getting Started
 
 1.  **Clone the repository:**
     ```sh
@@ -45,7 +45,7 @@ This is the backend for **TaskInMind**, a full-stack calendar and task managemen
 
 ---
 
-### 📝 API Endpoints
+### API Endpoints
 
 A sample of the available endpoints:
 

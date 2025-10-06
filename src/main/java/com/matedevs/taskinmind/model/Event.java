@@ -19,6 +19,7 @@ public class Event {
     private String location;
     private Long userId;
     private String color;
+    private String repeatEvent;
 
     @PrePersist
     protected void onCreate() {

@@ -78,7 +78,6 @@ public class EventController {
             System.out.println("DEBUG: EventService.getEventsByMonthAndUser called with year=" + Year + ", month=" + Month + ", userId=" + userId);
             logger.info("DEBUG: EventService.getEventsByMonthAndUser called with year=" + Year + ", month=" + Month + ", userId=" + userId);
             List<Event> event = eventService.getEventsByMonth(Year, Month, userId);
-            System.err.println(userId);
             return ResponseEntity.ok(event);
         } catch (SecurityException e) {
             System.err.println("Security error getting events by month: " + e.getMessage());
@@ -93,11 +92,11 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
         Optional<Event> event = eventService.getEventById(id);
-        return event.map(value -> new ResponseEntity<>(value, HttpStatus.OK)) // 200 OK, ha megtalálta
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND)); // 404 Not Found, ha nem
+        return event.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
 
-    // Esemény frissítése ID alapján (PUT /api/events/{id})
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
         Optional<Event> optionalEvent = eventService.getEventById(id);
@@ -106,25 +105,26 @@ public class EventController {
             Event existingEvent = optionalEvent.get();
             existingEvent.setTitle(eventDetails.getTitle());
             existingEvent.setDescription(eventDetails.getDescription());
-            existingEvent.setStartDate(eventDetails.getStartDate()); // Frissítjük a kezdő időpontot
-            existingEvent.setEndDate(eventDetails.getEndDate());     // Frissítjük a befejező időpontot
-            // A 'createdAt' nem frissül, mert 'updatable = false'
+            existingEvent.setStartDate(eventDetails.getStartDate());
+            existingEvent.setEndDate(eventDetails.getEndDate());
+            existingEvent.setLocation(eventDetails.getLocation());
+            existingEvent.setColor(eventDetails.getColor());
+            existingEvent.setRepeatEvent(eventDetails.getRepeatEvent());
 
             Event updatedEvent = eventService.createEvent(existingEvent);
-            return new ResponseEntity<>(updatedEvent, HttpStatus.OK); // 200 OK
+            return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Esemény törlése ID alapján (DELETE /api/events/{id})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         Optional<Event> event = eventService.getEventById(id);
         if (event.isPresent()) {
             eventService.deleteEvent(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content (sikeres törlés, nincs választest)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found, ha nem létezik az esemény
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

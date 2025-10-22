@@ -2,7 +2,6 @@ package com.matedevs.taskinmind.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,6 +19,7 @@ public class Event {
     private Long userId;
     private String color;
     private String repeatEvent;
+    private int reminderTime;
 
     @PrePersist
     protected void onCreate() {

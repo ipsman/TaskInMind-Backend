@@ -2,7 +2,6 @@ package com.matedevs.taskinmind.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +11,7 @@ public class Reminder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private LocalDateTime sendAt;
-    private Boolean sent;
+    private Boolean sent = false;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id", nullable = false)

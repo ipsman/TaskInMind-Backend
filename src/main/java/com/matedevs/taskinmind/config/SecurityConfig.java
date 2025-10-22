@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll() // Login és regisztráció engedélyezése mindenki számára
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/tasks").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

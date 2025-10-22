@@ -12,7 +12,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -40,7 +41,13 @@ public class EmailService {
 
         Context context = new Context();
         context.setVariable("eventTitle", reminder.getEvent().getTitle());
-        context.setVariable("eventStartDate", reminder.getEvent().getStartDate());
+
+
+        LocalDateTime utcDateTime = event.getStartDate();
+
+        String formattedLocalTime = utcDateTime.format(DateTimeFormatter.ofPattern("yyyy. MM. dd. HH:mm"));
+
+        context.setVariable("eventStartDate", formattedLocalTime);
         context.setVariable("location", reminder.getEvent().getLocation());
 
         String htmlContent = templateEngine.process("reminder_template", context);

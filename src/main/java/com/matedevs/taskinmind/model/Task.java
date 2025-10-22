@@ -2,7 +2,6 @@ package com.matedevs.taskinmind.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,8 +11,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String title;
-    private String description;
+    private String priority;
     private boolean completed;
+    private String description;
     private LocalDateTime createdAt;
     private LocalDateTime dueDate;
 

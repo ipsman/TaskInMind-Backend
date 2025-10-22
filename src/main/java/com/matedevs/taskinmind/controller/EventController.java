@@ -1,11 +1,8 @@
 package com.matedevs.taskinmind.controller;
 
 import com.matedevs.taskinmind.config.CustomUserDetails;
-import com.matedevs.taskinmind.config.DataLoader;
 import com.matedevs.taskinmind.model.Event;
 import com.matedevs.taskinmind.service.EventService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@RestController // Jelöli, hogy ez egy REST Controller
-@RequestMapping("/api/events") // Az összes végpont "/api/events" prefixet kap
-@CrossOrigin(origins = "http://localhost:3000") // CORS engedélyezése a Next.js frontendről
+@RestController
+@RequestMapping("/api/events")
+@CrossOrigin(origins = "http://localhost:3000")
 public class EventController {
 
     private final EventService eventService;
@@ -58,11 +54,8 @@ public class EventController {
         event.setUserId(userId);
         try {
             Event savedEvent = eventService.createEvent(event);
-            // Siker esetén add vissza a mentett eseményt egy 201 Created státusszal
             return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
         } catch (Exception e) {
-            // Általános hiba esetén adj vissza egy 500-as hibát
-            // Egy @ControllerAdvice lenne a legtisztább megoldás a globális hibakezelésre
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -110,6 +103,7 @@ public class EventController {
             existingEvent.setLocation(eventDetails.getLocation());
             existingEvent.setColor(eventDetails.getColor());
             existingEvent.setRepeatEvent(eventDetails.getRepeatEvent());
+            existingEvent.setReminderTime(eventDetails.getReminderTime());
 
             Event updatedEvent = eventService.createEvent(existingEvent);
             return new ResponseEntity<>(updatedEvent, HttpStatus.OK);

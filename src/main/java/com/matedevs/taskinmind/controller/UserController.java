@@ -48,7 +48,7 @@ public class UserController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/getUser/{username}")
     public ResponseEntity<User> loginUser(@PathVariable String username) {
         Optional<User> user = userService.findByUsername(username);
         return user.map( value -> new ResponseEntity<>(value, HttpStatus.OK))

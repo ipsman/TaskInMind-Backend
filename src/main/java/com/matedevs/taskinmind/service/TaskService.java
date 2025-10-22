@@ -30,6 +30,7 @@ public class TaskService {
         if(optionalTask.isPresent()){
             Task task = optionalTask.get();
             task.setTitle(taskDetails.getTitle());
+            task.setPriority(taskDetails.getPriority());
             task.setDescription(taskDetails.getDescription());
             task.setCompleted(taskDetails.isCompleted());
             task.setDueDate(taskDetails.getDueDate());

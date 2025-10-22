@@ -16,6 +16,7 @@ public class Task {
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime dueDate;
+    private Long userId;
 
     @PrePersist
     protected void onCreate() {
